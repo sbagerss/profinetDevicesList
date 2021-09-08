@@ -1,12 +1,10 @@
 import clr
 clr.AddReference('C:\\Program Files\\Siemens\\Automation\\Portal V16\\PublicAPI\\V16\\Siemens.Engineering.dll')
-from System.IO import DirectoryInfo, FileInfo
 import Siemens.Engineering as tia
 import Siemens.Engineering.HW.Features as hwf
-# import Siemens.Engineering.Compiler as comp
-from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font
+import argparse
 
 ############################################################################
 class DevIpInfo:
@@ -65,6 +63,11 @@ def getAllDeviceItems(device, devLista):
             getAllDeviceItems(d, devLista)
 
 ############################################################################
+
+parser = argparse.ArgumentParser()
+parser.add_argument('filename', help="Nazwa pliku wynikowego")
+args = parser.parse_args()
+
 processes = tia.TiaPortal.GetProcesses() 
 mytia = processes[0].Attach()
 tiaProject = mytia.Projects[0]
@@ -90,7 +93,6 @@ for netService in networkServicesList:
             obj = DevIpInfo()
             obj.pnDeviceName = n.GetAttribute("PnDeviceName")
             obj.address = n.GetAttribute("Address")
-            print(obj.address)
             ipList.append(obj)
 
 changed = True
@@ -120,4 +122,4 @@ for n in ipList:
     sheet.cell(row = i, column = 2).value = n.address
     i = i + 1
 
-wb.save('magia.xlsx')
+wb.save(str(args.filename) + '.xlsx')
